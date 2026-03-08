@@ -1,0 +1,98 @@
+<div class="p-4 md:p-6">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+    <h1 class="text-2xl md:text-3xl font-bold">Expenses</h1>
+    <button (click)="openForm()" [disabled]="!selectedProjectId"
+            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition disabled:opacity-50">
+      + Add Expense
+    </button>
+  </div>
+
+  <app-project-selector (projectSelected)="onProjectSelected($event)"></app-project-selector>
+
+  @if (selectedProjectId) {
+    <div class="mb-4">
+    <label class="block text-gray-700 mb-2 text-sm md:text-base">Filter by Category</label>
+    <select [(ngModel)]="filterCategory" (ngModelChange)="loadExpenses()"
+            class="w-full md:w-auto px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base">
+      <option value="">All Categories</option>
+      <option value="material">Material</option>
+      <option value="labor">Labor</option>
+      <option value="misc">Miscellaneous</option>
+    </select>
+    </div>
+
+    <div class="bg-white rounded-lg shadow overflow-x-auto">
+    <table class="w-full text-sm md:text-base">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+          <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+          <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Category</th>
+          <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden lg:table-cell">Date</th>
+          <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y">
+        @for (expense of expenses(); track expense._id) {
+          <tr>
+            <td class="px-3 md:px-6 py-4">{{ expense.name }}</td>
+            <td class="px-3 md:px-6 py-4">₹{{ expense.amount | number }}</td>
+            <td class="px-3 md:px-6 py-4 hidden sm:table-cell">
+              <span class="px-2 py-1 rounded text-xs bg-gray-100">{{ expense.category }}</span>
+            </td>
+            <td class="px-3 md:px-6 py-4 hidden lg:table-cell">{{ expense.date | date }}</td>
+            <td class="px-3 md:px-6 py-4">
+              <button (click)="openForm(expense)" class="text-blue-600 hover:underline mr-2 text-xs md:text-sm">Edit</button>
+              <button (click)="deleteExpense(expense._id!)" class="text-red-600 hover:underline text-xs md:text-sm">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    </div>
+  }
+
+  <!-- Modal Form -->
+  @if (showForm()) {
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <h2 class="text-xl font-bold mb-4">{{ editingExpense() ? 'Edit' : 'Add' }} Expense</h2>
+      <form (ngSubmit)="submit()">
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2 text-sm">Name</label>
+          <input [(ngModel)]="formData.name" name="name" required
+                 class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2 text-sm">Amount</label>
+          <input [(ngModel)]="formData.amount" name="amount" type="number" required
+                 class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2 text-sm">Category</label>
+          <select [(ngModel)]="formData.category" name="category"
+                  class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            <option value="material">Material</option>
+            <option value="labor">Labor</option>
+            <option value="misc">Miscellaneous</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2 text-sm">Date</label>
+          <input [(ngModel)]="formData.date" name="date" type="date" required
+                 class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+        </div>
+        <div class="flex gap-2">
+          <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm">
+            Save
+          </button>
+          <button type="button" (click)="closeForm()" 
+                  class="flex-1 bg-gray-300 hover:bg-gray-400 py-2 rounded text-sm">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+    </div>
+  }
+</div>

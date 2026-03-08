@@ -1,0 +1,65 @@
+<div class="p-4 md:p-6">
+  <h1 class="text-2xl md:text-3xl font-bold mb-6">Dashboard</h1>
+  
+  <app-project-selector (projectSelected)="onProjectSelected($event)"></app-project-selector>
+
+  @if (loading()) {
+    <div class="text-center py-8">Loading...</div>
+  }
+
+  @if (stats() && !loading()) {
+    <div>
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+      <div class="bg-white p-4 md:p-6 rounded-lg shadow">
+        <h3 class="text-gray-600 text-xs md:text-sm">Total Investment</h3>
+        <p class="text-xl md:text-2xl font-bold text-blue-600">₹{{ stats()!.totalInvestment | number }}</p>
+      </div>
+      <div class="bg-white p-4 md:p-6 rounded-lg shadow">
+        <h3 class="text-gray-600 text-xs md:text-sm">Total Expenses</h3>
+        <p class="text-xl md:text-2xl font-bold text-red-600">₹{{ stats()!.totalExpenses | number }}</p>
+      </div>
+      <div class="bg-white p-4 md:p-6 rounded-lg shadow">
+        <h3 class="text-gray-600 text-xs md:text-sm">Total Received</h3>
+        <p class="text-xl md:text-2xl font-bold text-green-600">₹{{ stats()!.totalReceived | number }}</p>
+      </div>
+      <div class="bg-white p-4 md:p-6 rounded-lg shadow">
+        <h3 class="text-gray-600 text-xs md:text-sm">Balance</h3>
+        <p class="text-xl md:text-2xl font-bold" [class.text-green-600]="stats()!.balance >= 0" 
+           [class.text-red-600]="stats()!.balance < 0">
+          ₹{{ stats()!.balance | number }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Investors Table -->
+    <div class="bg-white rounded-lg shadow mb-8">
+      <div class="p-4 md:p-6 border-b">
+        <h2 class="text-lg md:text-xl font-bold">Investors</h2>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm md:text-base">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+              <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+              <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Share %</th>
+              <th class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Date</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y">
+            @for (investor of stats()!.investors; track investor._id) {
+              <tr>
+                <td class="px-3 md:px-6 py-4">{{ investor.name }}</td>
+                <td class="px-3 md:px-6 py-4">₹{{ investor.amount | number }}</td>
+                <td class="px-3 md:px-6 py-4">{{ investor.percentage }}%</td>
+                <td class="px-3 md:px-6 py-4 hidden sm:table-cell">{{ investor.date | date }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </div>
+  }
+</div>
